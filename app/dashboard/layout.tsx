@@ -1,15 +1,14 @@
-import Navbar from '@/src/components/Navbar';
+import '../globals.css';
+
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
-import './globals.css';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-
-const inter = Inter({ subsets: ['latin'] });
+import { redirect } from 'next/navigation';
+import { Sidebar } from '@/src/components/Sidebar';
 
 export const metadata: Metadata = {
-  title: 'FreeMind',
-  description: 'Mental Health application',
+  title: 'Dashboard | FreeMind',
+  description: 'Mental Health Dashboard',
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -18,12 +17,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     data: { user },
   } = await supabase.auth.getUser();
 
+  if (!user) {
+    redirect('/');
+  }
+
   return (
-    <html lang='en'>
-      <body className={inter.className}>
-        <Navbar user={user} />
-        <div className='w-full'>{children}</div>
-      </body>
-    </html>
+    <div className='flex h-screen'>
+      <Sidebar />
+      <div className='w-full h-full'>
+        <div className='p-4 h-full'>{children}</div>
+      </div>
+    </div>
   );
 }
